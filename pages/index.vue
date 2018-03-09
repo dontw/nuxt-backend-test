@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Card shadow>Hello This is Index</Card>
+        <Card shadow>Hello This is Index {{$t('test')}}</Card>
         <nuxt-link :to="localePath('testing')">TESTING</nuxt-link>
     </div>
 </template>

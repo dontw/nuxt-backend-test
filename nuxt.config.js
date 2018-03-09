@@ -84,6 +84,13 @@ module.exports = {
     ],
 
     /*
+     ** Middleware configuration
+     */
+    // router: {
+    //     middleware: 'middleTest'
+    // },
+
+    /*
      ** Axios module configuration
      */
     axios: {
