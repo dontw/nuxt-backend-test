@@ -1,13 +1,10 @@
 <template>
     <div>
-        <h1>TEST</h1>
-        <nuxt-link :to="localePath('index')">INDEX</nuxt-link>
+        <h1>body symtom</h1>
     </div>
-
 </template>
 <script>
 export default {
     layout: 'panel'
 }
 </script>
-

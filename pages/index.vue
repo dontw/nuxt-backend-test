@@ -1,14 +1,17 @@
 <template>
     <div>
         <Card shadow>Hello This is Index {{$t('test')}}</Card>
-        <nuxt-link :to="localePath('testing')">TESTING</nuxt-link>
+        <nuxt-link :to="localePath('dashBoard')">TO DASHBOARD</nuxt-link>
     </div>
 </template>
 
 <script>
-import { Card } from 'iview'
+import { Card, Message } from 'iview'
 
 export default {
+    mounted() {
+        this.$Message = Message
+    },
     components: { Card },
 
     data() {
