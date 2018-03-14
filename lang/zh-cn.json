@@ -4,13 +4,14 @@
         "management": "账号管理",
         "setting": "账号设定"
     },
+    "page.": "",
     "page": {
+        "dashBoard": "控制面板首页",
         "userManagement": "账号管理",
         "userAll": "所有账号管理",
         "userExpert": "专家账号管理",
         "orderManagement": "订单管理",
         "applicationManagement": "应用管理",
-        "recuperationGuide": "调理指导",
         "recuperationSyStem": "调理系统",
         "healthPassport": "健康护照",
         "bodyType": "体质类型",

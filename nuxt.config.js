@@ -47,14 +47,17 @@ module.exports = {
      ** Global CSS
      */
     css: [{
-        src: '~assets/less/global.less',
+        src: '../assets/less/globa.less',
         lang: 'less'
     }],
 
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: [],
+    plugins: [{
+        src: '~/plugins/iview.js',
+        ssr: true
+    }],
 
     /*
      ** Nuxt.js modules

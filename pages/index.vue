@@ -1,25 +1,14 @@
 <template>
     <div>
-        <Card shadow>Hello This is Index {{$t('test')}}</Card>
-        <nuxt-link :to="localePath('dashBoard')">TO DASHBOARD</nuxt-link>
+        <Card shadow>
+            <nuxt-link :to="localePath('dashBoard')">Control Panel</nuxt-link><br>
+            <nuxt-link :to="localePath('login')">Login</nuxt-link>
+        </Card>
     </div>
 </template>
 
 <script>
-import { Card, Message } from 'iview'
-
-export default {
-    mounted() {
-        this.$Message = Message
-    },
-    components: { Card },
-
-    data() {
-        return {}
-    },
-
-    computed: {}
-}
+export default {}
 </script>
 
 <style lang="less" scoped>

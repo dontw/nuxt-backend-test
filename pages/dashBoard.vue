@@ -1,15 +1,16 @@
 <template>
     <div>
-        dashBoard main page
-        <i-input v-model="value" placeholder="Enter something..." style="width: 300px"></i-input>
-        <i-switch v-model="switch1" @on-change="change"></i-switch>
-        <i-table :loading="loadingStatus" :columns="columns1" :data="currData"></i-table>
-        <Page :total="data1.length" :page-size="1" show-total show-elevator @on-change="changePage"></Page>
+        <Card>
+            <i-input v-model="value" placeholder="Enter something..." style="width: 300px"></i-input>
+            <i-switch v-model="switch1" @on-change="change"></i-switch>
+            <i-table :loading="loadingStatus" :columns="columns1" :data="currData"></i-table>
+            <Page :total="data1.length" :page-size="2" show-total show-elevator @on-change="changePage"></Page>
+        </Card>
     </div>
 </template>
 
 <script>
-import { Input, Switch, Message, Table, Button, Modal, Page } from 'iview'
+import { Input, Switch, Message, Table, Modal, Page } from 'iview'
 
 export default {
     layout: 'panel',
@@ -17,7 +18,6 @@ export default {
         'i-input': Input,
         'i-switch': Switch,
         'i-table': Table,
-        'i-button': Button,
         Modal,
         Page
     },
@@ -67,7 +67,7 @@ export default {
                     render: (h, params) => {
                         return h('div', [
                             h(
-                                Button,
+                                'Button',
                                 {
                                     props: {
                                         type: 'primary',
@@ -85,7 +85,7 @@ export default {
                                 'View'
                             ),
                             h(
-                                Button,
+                                'Button',
                                 {
                                     props: {
                                         type: 'error',
@@ -173,7 +173,7 @@ export default {
         },
 
         show(index) {
-            Modal.info({
+            this.$Modal.info({
                 title: 'User Info',
                 content: `Name：${this.data1[index].name}<br>Age：${
                     this.data1[index].age
@@ -185,6 +185,7 @@ export default {
             this.data1.splice(index, 1)
         },
 
+        //currPageNum 为 iview @on-change 的回传值
         changePage(currPageNum) {
             this.currData = [this.data1[currPageNum - 1]]
         }

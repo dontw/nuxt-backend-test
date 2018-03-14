@@ -2,7 +2,7 @@
     <Menu class="menu" :active-name="currRoute" :open-names="['users', 'orders', 'applications', 'products']" theme="dark" width="auto">
         <!-- MENU TITLE -->
         <div class="menu-title">
-            <h4 @click="routerPush('/dashBoard')">后台管理</h4>
+            <h2 @click="routerPush('/dashBoard')">后台管理</h2>
         </div>
         <!-- SUBMENU:USERS -->
         <Submenu name="users">
@@ -18,7 +18,6 @@
                 <span>{{$t('page.userExpert')}}</span>
             </i-menuItem>
         </Submenu>
-
         <!-- SUBMENU:ORDERS -->
         <Submenu name="orders">
             <!-- MENU TITLE -->
@@ -40,9 +39,6 @@
                 {{$t('page.applicationManagement')}}
             </template>
             <!-- MENU ITEMS -->
-            <i-menuItem name="recuperationGuide" @click.native="routerPush('/applications/recuperationGuide')">
-                <span>{{$t('page.recuperationGuide')}}</span>
-            </i-menuItem>
             <i-menuItem name="recuperationSyStem" @click.native="routerPush('/applications/recuperationSyStem')">
                 <span>{{$t('page.recuperationSyStem')}}</span>
             </i-menuItem>
@@ -72,14 +68,11 @@
     </Menu>
 </template>
 <script>
-import { Menu, Submenu, MenuItem, Icon } from 'iview'
+import { MenuItem } from 'iview'
 
 export default {
     components: {
-        Menu,
-        Submenu,
-        'i-menuItem': MenuItem,
-        Icon
+        'i-menuItem': MenuItem
     },
 
     computed: {
@@ -103,10 +96,11 @@ export default {
 .menu-title {
     color: #fff;
     padding: 0.8rem 0.8rem 0.2rem 0.8rem;
-    font-weight: normal;
-    font-size: 1.3rem;
     height: 50px;
     cursor: pointer;
+    h2 {
+        font-weight: normal;
+    }
 }
 </style>
 
