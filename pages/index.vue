@@ -1,7 +1,7 @@
 <template>
     <div>
         <Card shadow>
-            <nuxt-link :to="localePath('dashBoard')">Control Panel</nuxt-link><br>
+            <nuxt-link :to="localePath('dashBoard',null)">Control Panel</nuxt-link><br>
             <nuxt-link :to="localePath('login')">Login</nuxt-link>
         </Card>
     </div>

@@ -40,7 +40,7 @@ module.exports = {
      ** Customize the progress-bar color
      */
     loading: {
-        color: '#3B8070'
+        color: '#2D8CF0'
     },
 
     /*
@@ -55,9 +55,14 @@ module.exports = {
      ** Plugins to load before mounting the App
      */
     plugins: [{
-        src: '~/plugins/iview.js',
-        ssr: true
-    }],
+            src: '~plugins/iview.js',
+            ssr: true
+        },
+        {
+            src: '~plugins/vee-validate.js',
+            ssr: true
+        }
+    ],
 
     /*
      ** Nuxt.js modules
@@ -89,9 +94,9 @@ module.exports = {
     /*
      ** Middleware configuration
      */
-    // router: {
-    //     middleware: 'middleTest'
-    // },
+    router: {
+        middleware: 'i18n'
+    },
 
     /*
      ** Axios module configuration
@@ -107,6 +112,7 @@ module.exports = {
         /*
          ** You can extend webpack config here
          */
+        vender: ['vee-validate'],
         extend(config, ctx) {
             // Run ESLint on save
             if (ctx.isDev && ctx.isClient) {
