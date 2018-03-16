@@ -6,7 +6,7 @@
                 <Icon size="18" type="settings"></Icon>设定
             </template>
             <i-menuItem name="changePassword">修改密码</i-menuItem>
-            <i-menuItem name="logout" @click.native="$router.push('/')">登出</i-menuItem>
+            <i-menuItem name="logout" @click.native="$router.push('/login')">登出</i-menuItem>
         </Submenu>
     </Menu>
 </template>

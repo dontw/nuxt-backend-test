@@ -1,11 +1,12 @@
 <template>
     <div>
-        <Card>
-            <i-input v-model="value" placeholder="Enter something..." style="width: 300px"></i-input>
-            <i-switch v-model="switch1" @on-change="change"></i-switch>
-            <i-table :loading="loadingStatus" :columns="columns1" :data="currData"></i-table>
-            <Page :total="data1.length" :page-size="2" show-total show-elevator @on-change="changePage"></Page>
-        </Card>
+        <i-input v-model="value" placeholder="Enter something..." style="width: 300px"></i-input>
+        <Select v-model="model13" filterable remote :remote-method="remoteMethod1" :loading="loading1">
+            <Option v-for="(option, index) in options1" :value="option.value" :key="index">{{option.label}}</Option>
+        </Select>
+        <i-switch v-model="switch1" @on-change="change"></i-switch>
+        <i-table :loading="loadingStatus" :columns="columns1" :data="currData"></i-table>
+        <Page :total="data1.length" :page-size="2" show-total show-elevator @on-change="changePage"></Page>
     </div>
 </template>
 
@@ -22,13 +23,26 @@ export default {
         Page
     },
     mounted() {
-        this.$nextTick(() => {
-            //after DOM ELM is mounted
-            this.currData = [this.data1[0]]
-        })
+        // this.$nextTick(() => {
+        //     //after DOM ELM is mounted
+        //     this.currData = [this.data1[0]]
+        // })
     },
     data() {
         return {
+            model13: '',
+            loading1: false,
+            options1: [],
+            list: [
+                'Alabama',
+                'Alaska',
+                'Arizona',
+                'Arkansas',
+                'California',
+                'Colorado',
+                'Connecticut',
+                'Delaware'
+            ],
             value: '',
             loadingStatus: false,
             switch1: false,
@@ -188,6 +202,29 @@ export default {
         //currPageNum 为 iview @on-change 的回传值
         changePage(currPageNum) {
             this.currData = [this.data1[currPageNum - 1]]
+        },
+
+        remoteMethod1(query) {
+            if (query !== '') {
+                this.loading1 = true
+                setTimeout(() => {
+                    this.loading1 = false
+                    const list = this.list.map(item => {
+                        return {
+                            value: item,
+                            label: item
+                        }
+                    })
+                    this.options1 = list.filter(
+                        item =>
+                            item.label
+                                .toLowerCase()
+                                .indexOf(query.toLowerCase()) > -1
+                    )
+                }, 200)
+            } else {
+                this.options1 = []
+            }
         }
     }
 }

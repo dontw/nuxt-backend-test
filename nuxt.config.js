@@ -47,7 +47,7 @@ module.exports = {
      ** Global CSS
      */
     css: [{
-        src: '../assets/less/globa.less',
+        src: '../assets/less/global.less',
         lang: 'less'
     }],
 
@@ -55,14 +55,9 @@ module.exports = {
      ** Plugins to load before mounting the App
      */
     plugins: [{
-            src: '~plugins/iview.js',
-            ssr: true
-        },
-        {
-            src: '~plugins/vee-validate.js',
-            ssr: true
-        }
-    ],
+        src: '~plugins/iview.js',
+        ssr: true
+    }],
 
     /*
      ** Nuxt.js modules
@@ -112,7 +107,6 @@ module.exports = {
         /*
          ** You can extend webpack config here
          */
-        vender: ['vee-validate'],
         extend(config, ctx) {
             // Run ESLint on save
             if (ctx.isDev && ctx.isClient) {

@@ -7,12 +7,14 @@
                     <AppMenu></AppMenu>
                     <!-- CONTENT -->
                 </Sider>
-                <Layout>
+                <Layout :style="{minHeight: '100%'}">
                     <Header class="header">
                         <AppPanelHeader></AppPanelHeader>
                     </Header>
                     <Content :style="{padding: '16px'}">
-                        <nuxt></nuxt>
+                        <Card shadow :style="{minHeight:'88vh', padding:'5px'}">
+                            <nuxt></nuxt>
+                        </Card>
                     </Content>
                 </Layout>
             </Layout>

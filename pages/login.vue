@@ -5,28 +5,27 @@
             <h3 class="card__title">管理登陆</h3>
             <form @submit.prevent="onSubmit">
                 <p>账号</p>
-                <i-input v-model="user" class="input" type="text" placeholder="请输入账号" size="large" clearable>
+                <i-input @keyup.native="loginTyping(user,pwd)" v-model="user" class="input" type="text" placeholder="请输入账号" size="large" :maxlength="20">
                     <span slot="prepend">
                         <Icon class="icon" type="person" color="#CCCCCC" size="20"></Icon>
                     </span>
                 </i-input>
                 <p>密码</p>
-                <i-input class="input" :class="{'has-error':false}" type="password" placeholder="请输入密码" size="large" clearable>
+                <i-input @keyup.native="loginTyping(user,pwd)" v-model="pwd" class="input" :class="{'has-error':false}" type="password" placeholder="请输入密码" size="large" :maxlength="10">
                     <span slot="prepend">
                         <Icon class="icon" type="key" color="#CCCCCC" size="20"></Icon>
                     </span>
                 </i-input>
                 <div class="card__bottom-wrap">
-                    <p class="message message--success">
-                        <Icon type="checkmark-circled" size="16"></Icon> Success Message!
-                    </p>
-                    <p class="message message--error">
-                        <Icon type="android-warning" size="18"></Icon> Error Message!
-                    </p>
-                    <Button class="button" size="large" type="primary" html-type="submit" :loading="loginStatus">登录</Button>
-                    <input v-model="email" v-validate="'required|email'" name="email" type="text">
-                    <span v-show="errors.has('email')">{{ errors.first('email') }}</span>
-                    <button @click="validateBeforeSubmit" class="btn btn-primary">Submit Registration</button>
+                    <div class="message-wrap">
+                        <p class="message message--success" v-if="successMsgStatus">
+                            <Icon type="checkmark-circled" size="16"></Icon> 恭喜登录成功!
+                        </p>
+                        <p class="message message--error" v-if="failMsgStatus">
+                            <Icon type="android-warning" size="18"></Icon> {{failMsg}}
+                        </p>
+                    </div>
+                    <Button class="button" size="large" type="primary" html-type="submit" :disabled="disableStatus" :loading="loginStatus">登录</Button>
                 </div>
             </form>
         </Card>
@@ -42,39 +41,70 @@ export default {
     data() {
         return {
             loginStatus: false,
+            disableStatus: true,
+            successMsgStatus: false,
+            failMsgStatus: false,
+            failMsg: '',
             user: '',
-            email: '',
-            test: 'TEST',
-            loginMsg: ''
+            pwd: ''
         }
     },
     methods: {
         onSubmit() {
-            // console.log('login')
-            // login()
-            //     .then(() => {
-            //         this.$router.push('/dashBoard')
-            //     })
-            //     .catch(e => {
-            //         console.log(e)
-            //     })
-            // function login() {
-            //     return new Promise((resolve, reject) => {
-            //         setTimeout(resolve, 1500)
-            //     })
-            // }
+            this.failMsgStatus = false
+            this.loginStatus = true
+            if (this.userPwdValidate(this.pwd)) {
+                login()
+                    .then(data => {
+                        this.loginStatus = false
+                        this.successMsgStatus = true
+                        setTimeout(() => {
+                            this.successMsgStatus = false
+                            this.$router.push('/dashBoard')
+                        }, 1500)
+                    })
+                    .catch(e => {
+                        this.loginStatus = false
+                        this.failMsgStatus = true
+                        this.failMsg = '登录失败，请重新登录!'
+                        console.log(e)
+                    })
+            }
+
+            function login(user, pwd) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        let status = true
+                        if (status) {
+                            resolve('ok!')
+                        } else {
+                            reject('err')
+                        }
+                    }, 1500)
+                })
+            }
         },
 
-        validateBeforeSubmit(e) {
-            this.$validator
-                .validateAll()
-                .then(x => {
-                    console.log('ok', x)
-                    console.log(this.errors)
-                })
-                .catch(e => {
-                    console.log('error', e)
-                })
+        //侦测是否所有输入格均被输入内容，若都有输入内容，改变登录鈕状态
+        loginTyping(user, pwd) {
+            user && pwd
+                ? (this.disableStatus = false)
+                : (this.disableStatus = true)
+        },
+
+        //账户格式验证
+        userNameValidate(user) {},
+
+        //密码格式验证
+        userPwdValidate(pwd) {
+            let re = /^[a-zA-Z0-9]{6,10}$/
+            if (!re.test(pwd)) {
+                this.failMsgStatus = true
+                this.failMsg = '密码输入错误!'
+                this.loginStatus = false
+                return false
+            }
+            return true
         }
     }
 }
@@ -109,10 +139,11 @@ export default {
 
     &__bottom-wrap {
         margin-top: 50px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
     }
+}
+
+.message-wrap {
+    height: 50px;
 }
 
 .message {
