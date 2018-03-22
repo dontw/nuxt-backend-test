@@ -60,7 +60,7 @@ export default {
                         this.successMsgStatus = true
                         setTimeout(() => {
                             this.successMsgStatus = false
-                            this.$router.push('/dashBoard')
+                            this.$router.push('admin')
                         }, 1500)
                     })
                     .catch(e => {

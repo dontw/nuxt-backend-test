@@ -118,5 +118,10 @@ module.exports = {
                 })
             }
         }
+    },
+
+    transition: {
+        name: 'fade', // vue css trasition class name
+        mode: 'out-in'
     }
 }

@@ -1,0 +1,19 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-sever",
+      "author": "doge"
+    },
+    {
+      "title": "cate",
+      "author": "doge",
+      "id": 2
+    },
+    {
+      "title": "cate",
+      "author": "doge",
+      "id": 3
+    }
+  ]
+}

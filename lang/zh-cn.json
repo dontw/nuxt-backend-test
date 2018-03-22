@@ -7,10 +7,10 @@
     "page.": "",
     "page.login": "",
     "page": {
-        "dashBoard": "控制面板首页",
+        "admin": "",
         "userManagement": "账号管理",
         "userAll": "所有账号管理",
-        "userExpert": "专家账号管理",
+        "userAgent": "省代理管理",
         "orderManagement": "订单管理",
         "applicationManagement": "应用管理",
         "recuperationSyStem": "调理系统",
@@ -19,5 +19,19 @@
         "bodySymptom": "体质症状",
         "productsManagement": "商品管理",
         "productList": "商品列表"
+    },
+
+    "distributor": {
+        "distributor": "",
+        "regionalUserManagement": "区域会员管理",
+        "orderManagement": "订单管理",
+        "storeManagement": "店铺管理"
+    },
+
+    "provinceAgent": {
+        "provinceAgent": "",
+        "provincialUserManagement": "本省会员管理",
+        "orderManagement": "订单管理",
+        "storeManagement": "店铺管理"
     }
 }
