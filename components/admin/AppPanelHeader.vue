@@ -3,9 +3,9 @@
         <h3>{{$t(routerName)}}</h3>
         <Submenu class="submenu" name="setting">
             <template slot="title">
-                <Icon size="18" type="settings"></Icon>系统管理
+                <Icon size="18" type="settings"></Icon>系统设置
             </template>
-            <i-menuItem name="changePassword">管理员列表</i-menuItem>
+            <!-- <i-menuItem name="adminLists" disabled>管理员列表</i-menuItem> -->
             <i-menuItem name="changePassword">修改密码</i-menuItem>
             <i-menuItem name="logout" @click.native="$router.push('/login')">登出</i-menuItem>
         </Submenu>

@@ -90,7 +90,7 @@ module.exports = {
      ** Middleware configuration
      */
     router: {
-        middleware: 'i18n'
+        middleware: ['routerBlocker']
     },
 
     /*

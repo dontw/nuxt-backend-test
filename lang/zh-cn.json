@@ -7,7 +7,7 @@
     "page.": "",
     "page.login": "",
     "page": {
-        "admin": "",
+        "admin": "后台管理首页",
         "userManagement": "账号管理",
         "userAll": "所有账号管理",
         "userAgent": "省代理管理",

@@ -14,22 +14,23 @@
             <i-menuItem name="userAll" @click.native="routerPush('/admin/users/userAll')">
                 <span>{{$t('page.userAll')}}</span>
             </i-menuItem>
-            <i-menuItem name="userAgent" @click.native="routerPush('/admin/users/userAgent')">
+            <!-- <i-menuItem name="userAgent" @click.native="routerPush('/admin/users/userAgent')">
                 <span>{{$t('page.userAgent')}}</span>
-            </i-menuItem>
+            </i-menuItem> -->
         </Submenu>
         <!-- SUBMENU:ORDERS -->
-        <Submenu name="orders">
-            <!-- MENU TITLE -->
+        <!-- <Submenu name="orders">
+
             <template slot="title">
                 <Icon type="ios-cart"></Icon>
                 {{$t('page.orderManagement')}}
             </template>
-            <!-- MENU ITEMS -->
+
             <i-menuItem name="orderManagement" @click.native="routerPush('/admin/orders/orderManagement')">
                 <span>{{$t('page.orderManagement')}}</span>
             </i-menuItem>
-        </Submenu>
+
+        </Submenu> -->
 
         <!-- SUBMENU:APPS -->
         <Submenu name="applications">
