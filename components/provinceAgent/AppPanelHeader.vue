@@ -11,12 +11,7 @@
     </Menu>
 </template>
 <script>
-import { MenuItem } from 'iview'
 export default {
-    components: {
-        'i-menuItem': MenuItem
-    },
-
     computed: {
         routerName() {
             return (

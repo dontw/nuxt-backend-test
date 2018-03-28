@@ -57,6 +57,8 @@ module.exports = {
     plugins: [{
         src: '~plugins/iview.js',
         ssr: true
+    }, {
+        src: '~plugins/qriously.js'
     }],
 
     /*
