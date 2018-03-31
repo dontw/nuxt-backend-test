@@ -18,7 +18,8 @@
         "bodyType": "体质类型",
         "bodySymptom": "体质症状",
         "productsManagement": "商品管理",
-        "productList": "商品列表"
+        "productList": "商品列表",
+        "changePassword": "修改管理员密码"
     },
 
     "distributor": {
