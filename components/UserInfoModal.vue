@@ -1,23 +1,28 @@
 <template>
-    <Modal v-model="modalStatusFromParent" :styles="{top: '60px'}">
+    <Modal :value="modalStatus" :mask-closable="false" :closable="false" :styles="{top: '90px'}">
         <!-- MODAL HEADER -->
         <div slot="header">
             <Row :style="{padding:'15px'}" :gutter="16">
                 <!-- HEADICON -->
                 <i-col span="6">
-                    <Avatar :style="{height:'100px', width:'100px', 'border-radius':'50%','box-shadow':'0px 0px 1px 1px #CCCCCC'}" src="https://randomuser.me/api/portraits/men/92.jpg" />
+                    <Avatar class="headicon" :class="{'bigger':imgBiggerStatus}" :src="userData.headiconurl" @click.native="toggleImgBigger" />
                 </i-col>
                 <!-- QRCODE -->
                 <i-col span="6">
-                    <qriously :style="{'box-shadow':'0px 0px 1px 1px #CCCCCC'}" value="The end of civilization starts from here" :size="100" />
+                    <div :style="{position:'relative'}">
+                        <qriously class="qrcode" :class="{'qrbigger':qrcodeBiggerStatus}" :value="'test'" :size="100" @click.native="toggleQrcodeBigger" />
+                        <a class="qrcode-link" @click="downloadQrcode">
+                            <Icon type="arrow-down-a"></Icon>下载QRCODE
+                        </a>
+                    </div>
                 </i-col>
                 <!-- PRIMARY USER INFO -->
                 <i-col span="12">
                     <div class="user-info-wrap">
                         <div class="nick-name-wrap">
                             <span class="nick-name">{{userData.nickname}}</span>
-                            <!-- <Icon class="gender-icon" type="male" color="blue"></Icon> -->
-                            <Icon class="gender-icon" type="female" color="pink"></Icon>
+                            <Icon v-if="userData.gender===0" class="gender-icon" type="female" color="pink"></Icon>
+                            <Icon v-if="userData.gender===1" class="gender-icon" type="male" color="blue"></Icon>
                         </div>
                         <div>
                             <span>ID：</span>
@@ -29,7 +34,7 @@
                         </div>
                         <div>
                             <span>身份：</span>
-                            <span>{{userData.role}}</span>
+                            <span>{{userData.role | roleToLetter}}</span>
                         </div>
                     </div>
                 </i-col>
@@ -43,11 +48,11 @@
                     <div class="tab-content">
                         <div class="user-data-wrap">
                             <span class="user-data-title">微信绑定：</span>
-                            <span>{{userData.wechatstatus}}</span>
+                            <span>{{userData.wechatstatus|bindToLetter}}</span>
                         </div>
                         <div class="user-data-wrap">
                             <span class="user-data-title">QQ绑定：</span>
-                            <span>{{userData.qqstatus}}</span>
+                            <span>{{userData.qqstatus|bindToLetter}}</span>
                         </div>
                         <div class="user-data-wrap">
                             <span class="user-data-title">注册时间：</span>
@@ -68,7 +73,7 @@
                         </div>
                         <div class="user-data-wrap">
                             <span class="user-data-title">性别：</span>
-                            <span>{{userData.gender}}</span>
+                            <span>{{userData.gender | genderToLetter}}</span>
                         </div>
                         <div class="user-data-wrap">
                             <span class="user-data-title">身高/cm：</span>
@@ -122,56 +127,63 @@
         </div>
         <!-- MODAL FOOTER -->
         <div slot="footer">
-            <Button type="primary" size="large" @click="emitModalFalseStatus">关闭</Button>
+            <Button type="primary" size="large" @click.native="closeModal" long>关闭</Button>
         </div>
     </Modal>
 </template>
 <script>
-// props object structure example
-//  userData: {
-//                 userid: '12345678912345678',
-//                 headicon: 'https://randomuser.me/api/portraits/men/92.jpg',
-//                 createdate: '1949/04/23/12:00:00',
-//                 logindate: '2142/08/30/12:00:00',
-//                 nickname: '尼歌王',
-//                 name: '王尼歌',
-//                 email: 'doge@mail.com',
-//                 phone: '12345678912',
-//                 role: 1,
-//                 gender: 0,
-//                 height: 180,
-//                 weight: 160,
-//                 birthday: '1949/10/01',
-//                 qqstatus: 0,
-//                 wechatstatus: 0,
-//                 country: '中华人民共和国',
-//                 provincename: '北京市',
-//                 cityname: '市辖区',
-//                 districtname: '城东区',
-//                 address: '中华人民共和国北京市市辖区城东区198号9号楼64室',
-//                 postalcode: '100013',
-//                 myqrcode: 'https://www.instagram.com/explore/tags/shibamania/'
-//             }
+import userAllFilters from '~/mixins/userAllFilters'
 export default {
     props: {
-        modalStatus: {
-            type: Boolean,
-            default: () => true
-        },
         userData: {
             type: Object,
             default: () => ({})
         }
     },
 
+    mixins: [userAllFilters],
+
     data() {
         return {
-            modalStatusFromParent: modalStatus
+            imgBiggerStatus: false,
+            qrcodeBiggerStatus: false
         }
     },
+
+    computed: {
+        modalStatus() {
+            return this.$store.state.userAll.modalStatus
+        }
+    },
+
     methods: {
-        emitModalFalseStatus() {
-            this.$emit('turnOffModal', false)
+        toggleImgBigger() {
+            this.imgBiggerStatus = !this.imgBiggerStatus
+            this.qrcodeBiggerStatus = false
+        },
+
+        toggleQrcodeBigger() {
+            this.qrcodeBiggerStatus = !this.qrcodeBiggerStatus
+            this.imgBiggerStatus = false
+        },
+
+        saveAsImg(base64File, fileName) {
+            let link = document.querySelector('.qrcode-link')
+            link.setAttribute('href', base64File)
+            link.setAttribute('download', fileName)
+            link.click()
+        },
+
+        downloadQrcode() {
+            let canvas = document.getElementsByTagName('canvas')[0]
+            let dataUrl = canvas.toDataURL()
+            this.saveAsImg(dataUrl, 'qrcode')
+        },
+
+        closeModal() {
+            if (this.$store.state.userAll.modalStatus) {
+                this.$store.dispatch('userAll/setModalStatus', false)
+            }
         }
     }
 }
@@ -208,6 +220,98 @@ export default {
 
 .user-data-title {
     font-weight: bold;
+}
+
+.headicon {
+    transition: 0.3s;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: 1px solid #888;
+    position: relative;
+}
+
+.headicon:hover {
+    cursor: pointer;
+    &:before {
+        content: '点击放大';
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -40%);
+        color: white;
+        font-size: 0.9rem;
+        text-shadow: 1px 1px 2px black;
+        z-index: 2;
+    }
+}
+
+.bigger {
+    transform-origin: -38% -18%;
+    transform: scale(3);
+    z-index: 2;
+    border: none;
+    border-radius: 0;
+
+    &:hover {
+        text-align: center;
+        &:before {
+            content: '点击缩小';
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -40%);
+            color: white;
+            font-size: 0.05rem;
+            text-shadow: 1px 1px 2px black;
+        }
+    }
+}
+
+.qrcode {
+    position: relative;
+    transition: 0.3s;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    z-index: 1;
+    &:hover {
+        &:before {
+            content: '点击放大';
+            display: inline-block;
+            position: absolute;
+            width: 60px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -40%);
+            color: white;
+            background: black;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px black;
+            z-index: 2;
+        }
+    }
+}
+
+.qrbigger {
+    transform-origin: 20% -18%;
+    transform: scale(3);
+    border: 0;
+    border-radius: 0;
+    &:hover {
+        &:before {
+            content: '点击缩小';
+            width: auto;
+            font-size: 0.05rem;
+        }
+    }
+}
+
+.qrcode-link {
+    position: absolute;
+    bottom: -20px;
+    left: 6px;
 }
 </style>
 

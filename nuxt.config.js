@@ -100,6 +100,12 @@ module.exports = {
      */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
+        baseURL: process.env.BASE_URL || 'http://localhost:3000'
+    },
+
+    env: {
+        K_TOKEN: process.env.K_TOKEN || 'LeedianPlatformToken',
+        API_PWD_KEY: process.env.API_PWD_KEY || "769E18DAFE373A2F8A17B415"
     },
 
     /*
