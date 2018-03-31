@@ -56,7 +56,10 @@ export default {
             this.$store.dispatch('userAll/setList').then(result => {
                 this.userAllLoadingStatus = false
                 if (!result) {
-                    this.$Message.warning('回传信息异常，请再试一次')
+                    this.$Message.warning({
+                        content: '资料连接异常',
+                        duration: 3
+                    })
                 }
             })
         })
@@ -77,7 +80,7 @@ export default {
                 },
                 {
                     title: '用户ID',
-                    key: 'userid',
+                    key: 'phone',
                     align: 'center'
                 },
                 {
@@ -213,6 +216,10 @@ export default {
 <style lang="less" scoped>
 .filter-wrap {
     margin-bottom: 10px;
+}
+
+.userid {
+    display: none;
 }
 </style>
 

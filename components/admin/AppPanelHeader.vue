@@ -6,8 +6,8 @@
                 <Icon size="18" type="settings"></Icon>系统设置
             </template>
             <!-- <i-menuItem name="adminLists" disabled>管理员列表</i-menuItem> -->
-            <i-menuItem name="changePassword">修改密码</i-menuItem>
-            <i-menuItem name="logout" @click.native="$router.push('/login')">登出</i-menuItem>
+            <i-menuItem name="changePassword" disabled>修改密码</i-menuItem>
+            <i-menuItem name="logout" @click.native="onLogout">登出</i-menuItem>
         </Submenu>
     </Menu>
 </template>
@@ -26,6 +26,13 @@ export default {
                     this.$route.path.split('/').length - 1
                 ]
             )
+        }
+    },
+
+    methods: {
+        onLogout() {
+            this.$store.dispatch('auth/logout')
+            this.$router.push('/login')
         }
     }
 }

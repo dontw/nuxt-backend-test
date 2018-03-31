@@ -17,6 +17,7 @@
         "babel-plugin-import": "^1.6.5",
         "express": "^4.15.3",
         "iview": "^2.9.2",
+        "js-cookie": "^2.2.0",
         "md5": "^2.2.1",
         "nuxt": "^1.0.0",
         "nuxt-i18n": "^2.3.4",

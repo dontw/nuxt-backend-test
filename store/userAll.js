@@ -1,3 +1,5 @@
+const MOCK_URL = process.env.MOCK_URL
+
 export const state = () => ({
     list: [],
     modalStatus: false,
@@ -16,13 +18,12 @@ export const mutations = {
     setModalData(state, data) {
         state.modalData = data
     }
-
 }
 
 export const actions = {
     setList(VuexContext) {
         return this.$axios
-            .$get(`admin/users`)
+            .$get(MOCK_URL + '/admin/users')
             .then(result => {
                 VuexContext.commit('setList', result.data.rows)
                 return true
@@ -37,9 +38,8 @@ export const actions = {
     },
 
     setModalData(vuexContex, userId) {
-        console.log('selected user id', userId)
         return this.$axios
-            .$get(`/admin/user/${userId}`)
+            .$get(MOCK_URL + `/admin/user/${userId}`)
             .then(result => {
                 vuexContex.commit('setModalData', result.data)
                 return true
