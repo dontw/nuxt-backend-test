@@ -10,7 +10,7 @@
                 <!-- QRCODE -->
                 <i-col span="6">
                     <div :style="{position:'relative'}">
-                        <qriously class="qrcode" :class="{'qrbigger':qrcodeBiggerStatus}" :value="'test'" :size="100" @click.native="toggleQrcodeBigger" />
+                        <qriously class="qrcode" :class="{'qrbigger':qrcodeBiggerStatus}" :value="userData.qrcode" :size="100" @click.native="toggleQrcodeBigger" />
                         <a class="qrcode-link" @click="downloadQrcode">
                             <Icon type="arrow-down-a"></Icon>下载QRCODE
                         </a>
@@ -227,7 +227,7 @@ export default {
     height: 100px;
     width: 100px;
     border-radius: 50%;
-    border: 1px solid #888;
+    border: 1px solid #ccc;
     position: relative;
 }
 

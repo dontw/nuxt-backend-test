@@ -35,12 +35,20 @@
 import { Input } from 'iview'
 import md5 from 'md5'
 import errCodeMsg from '~/mixins/errCodeMsg'
+import packageJson from '~/package.json'
 
 export default {
     components: {
         'i-input': Input
     },
     mixins: [errCodeMsg],
+    mounted() {
+        this.$store.dispatch('auth/logout')
+        console.log(
+            '%c FOFADON BACK-END ver ' + packageJson.version + ' ',
+            'background: #2d8cf0; color:#FFFFFF;'
+        )
+    },
     data() {
         return {
             loginStatus: false,

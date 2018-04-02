@@ -21,8 +21,13 @@
     </div>
 </template>
 <script>
+import md5 from 'md5'
+import getEncrypt from '~/tools/encrypt'
+import errCodeMsg from '~/mixins/errCodeMsg'
+
 export default {
     layout: 'adminPanel',
+    mixins: [errCodeMsg],
     data() {
         return {
             oldPwd: null,
@@ -35,22 +40,57 @@ export default {
 
     methods: {
         onSubmit() {
-            this.$axios
-                .$post(
-                    process.env.API_URL + '/user/change/pwd',
-                    { opwd: this.oldPwd, npwd: this.newPwd },
-                    {
-                        headers: {
-                            'k-session': this.$store.state.auth.session
+            if (this.checkInput() && this.checkNewPwd()) {
+                this.$axios
+                    .$post(
+                        process.env.API_URL + '/user/change/pwd',
+                        {
+                            opwd: getEncrypt(
+                                md5(this.oldPwd),
+                                process.env.API_PWD_KEY
+                            ),
+                            npwd: getEncrypt(
+                                md5(this.newPwd),
+                                process.env.API_PWD_KEY
+                            )
+                        },
+                        {
+                            headers: {
+                                'k-session': this.$store.state.auth.session
+                            }
                         }
-                    }
+                    )
+
+                    .then(result => {
+                        this.$router.push('/admin/changePassword/completed')
+                    })
+
+                    .catch(e => {
+                        if (!e.response.headers)
+                            return this.$Message.warning('连线异常')
+                        this.$Message.warning(
+                            this.errCodeMsg(e.response.headers.code)
+                        )
+                    })
+            }
+        },
+
+        checkInput() {
+            if (!this.oldPwd || !this.newPwd || !this.newPwdConfirm) {
+                this.$Message.warning('输入栏位不可为空')
+                return false
+            }
+            return true
+        },
+
+        checkNewPwd() {
+            if (this.newPwd !== this.newPwdConfirm) {
+                this.$Message.warning(
+                    '请确认 新密码 及 新密码确认 栏位是否一致!'
                 )
-                .then(result => {
-                    console.log(result)
-                })
-                .catch(e => {
-                    console.log(e.response.headers)
-                })
+                return false
+            }
+            return true
         }
     }
 }

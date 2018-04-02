@@ -9,24 +9,24 @@
                     </i-col>
                     <i-col span="5">
                         <Select v-model="role" size="large" placeholder="身份">
-                            <Option value="0">一般用户</Option>
+                            <Option value="1">一般用户</Option>
                         </Select>
                     </i-col>
                     <i-col span="5">
                         <Select v-model="gender" size="large" placeholder="性别">
-                            <Option value="0">男性</Option>
-                            <Option value="1">女性</Option>
-                            <Option value="2">无</Option>
+                            <Option value="0">女性</Option>
+                            <Option value="1">男性</Option>
+                            <!-- <Option value="2">无</Option> -->
                         </Select>
                     </i-col>
                     <i-col span="5">
-                        <DatePicker v-model="dateRange" type="daterange" placement="bottom-end" placeholder="日期区间" size="large"></DatePicker>
+                        <DatePicker format="yyyy/MM/dd" :value="dateRange" @on-change="dateHandler" type="daterange" placement="bottom-end" placeholder="日期区间" size="large"></DatePicker>
                     </i-col>
                     <i-col span="2">
                         <Button size="large" icon="ios-trash-outline" long @click="clearInput">清空</Button>
                     </i-col>
                     <i-col span="2">
-                        <Button type="primary" icon="ios-search" size="large" long>查询</Button>
+                        <Button type="primary" icon="ios-search" size="large" html-type="submit" long>查询</Button>
                     </i-col>
                 </Row>
             </form>
@@ -36,7 +36,7 @@
 
         <!-- TABLE -->
         <Table border :columns="userCol" :data="currListData" :loading="userAllLoadingStatus"></Table>
-        <Page style="margin-top:15px" :total="currListData.length" :page-size="10" show-elevator show-total></Page>
+        <Page style="margin-top:15px" @on-change="changePage" :total="listCount" :page-size="pageSize" show-elevator show-total></Page>
 
         <!-- MODAL -->
         <UserInfoModal :userData="currUserData"></UserInfoModal>
@@ -53,23 +53,44 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
-            this.$store.dispatch('userAll/setList').then(result => {
-                this.userAllLoadingStatus = false
-                if (!result) {
-                    this.$Message.warning({
-                        content: '资料连接异常',
-                        duration: 3
-                    })
-                }
-            })
+            this.$store
+                .dispatch('userAll/setList', {
+                    data: {
+                        size: this.pageSize,
+                        offset: 0,
+                        query: {
+                            role: parseInt(this.role),
+                            gender: parseInt(this.gender),
+                            startdate: this.startdate,
+                            enddate: this.enddate,
+                            phone: this.phone
+                        }
+                    },
+                    session: this.currSession
+                })
+                .then(result => {
+                    this.userAllLoadingStatus = false
+                    if (!result) {
+                        this.$Message.warning({
+                            content: '资料连接异常',
+                            duration: 3
+                        })
+                    }
+                })
         })
     },
     data() {
         return {
+            //filter input data
             phone: null, // string
             role: null, // 0 1
             gender: null, // 0 1
-            dateRange: null, //array
+            pageSize: 10,
+            dateRange: [
+                this.$store.state.userAll.listSetting.startdate,
+                this.$store.state.userAll.listSetting.enddate
+            ], //array
+
             userAllLoadingStatus: true,
             //Table titles
             userCol: [
@@ -80,12 +101,12 @@ export default {
                 },
                 {
                     title: '用户ID',
-                    key: 'phone',
+                    key: 'nickname',
                     align: 'center'
                 },
                 {
                     title: '手机号',
-                    key: 'phone',
+                    key: 'nickname',
                     align: 'center'
                 },
                 {
@@ -111,7 +132,7 @@ export default {
                 {
                     title: '身份',
                     key: 'role',
-                    width: 70,
+                    width: 100,
                     align: 'center'
                 },
                 {
@@ -169,10 +190,18 @@ export default {
                                             this.$store
                                                 .dispatch(
                                                     'userAll/setModalData',
-                                                    params.row.userid
+                                                    {
+                                                        userId:
+                                                            params.row.userid,
+                                                        session: this.$store
+                                                            .state.auth.session
+                                                    }
                                                 )
                                                 .then(result => {
-                                                    if (!result) return
+                                                    if (!result)
+                                                        return this.$Message.warning(
+                                                            '资料连线异常'
+                                                        )
                                                     this.$store.dispatch(
                                                         'userAll/setModalStatus',
                                                         true
@@ -190,25 +219,88 @@ export default {
         }
     },
 
-    filters: {},
-
     methods: {
-        onSubmit() {},
+        onSubmit() {
+            let size = this.pageSize
+            let offset = 0
+            let query = {
+                role: this.role,
+                gender: this.gender,
+                startdate: this.startdate,
+                enddate: this.enddate,
+                phone: this.phone || null
+            }
+
+            let data = { size, offset, query }
+
+            this.$store
+                .dispatch('userAll/setList', {
+                    data,
+                    session: this.currSession
+                })
+                .then(result => {
+                    if (!result) {
+                        this.$Message.warning({
+                            content: '出问题啦!',
+                            duration: 3
+                        })
+                    }
+                    if (result.code === '00.003') {
+                        this.$Message.warning({
+                            content: '请输入完整手机号',
+                            duration: 3
+                        })
+                    }
+                })
+        },
         clearInput() {
             this.phone = null
             this.role = null
             this.gender = null
-            this.dateRange = null
+            this.dateRange = [
+                this.$store.state.userAll.default_start_day,
+                this.$store.state.userAll.today
+            ]
+        },
+
+        dateHandler(date) {
+            this.dateRange = date
+        },
+
+        changePage(pageNum) {
+            let size = this.pageSize
+            let offset = (pageNum - 1) * size
+            let query = this.$store.state.userAll.listSetting
+            let data = { size, offset, query }
+            this.$store.dispatch('userAll/setList', {
+                data,
+                session: this.currSession
+            })
         }
     },
 
     computed: {
+        currSession() {
+            return this.$store.state.auth.session
+        },
         currUserData() {
             return this.$store.state.userAll.modalData
         },
 
         currListData() {
-            return this.$store.state.userAll.list
+            return this.$store.getters['userAll/getList']
+        },
+
+        startdate() {
+            return this.dateRange[0]
+        },
+
+        enddate() {
+            return this.dateRange[1]
+        },
+
+        listCount() {
+            return this.$store.state.userAll.listCount
         }
     }
 }

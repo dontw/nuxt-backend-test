@@ -117,6 +117,7 @@ module.exports = {
         K_TOKEN: process.env.K_TOKEN || 'LeedianPlatformToken',
         API_PWD_KEY: process.env.API_PWD_KEY || '769E18DAFE373A2F8A17B415',
         API_URL: process.env.API_URL || 'http://192.168.2.215:21000/api/v1',
+        USER_URL: process.env.USER_URL || 'http://192.168.2.215:21300/api/v1',
         MOCK_URL: process.env.MOCK_URL || 'http://localhost:3000'
     },
 

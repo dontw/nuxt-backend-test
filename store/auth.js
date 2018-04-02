@@ -68,7 +68,7 @@ export const actions = {
 
         //if there is no session & rsesson than logout and redirect to login page
         if (!session || !rsession) {
-            console.log('%c NO SESSION ', 'background: #ed3f14; color: #FFFFFF')
+            // console.log('%c NO SESSION ', 'background: #ed3f14; color: #FFFFFF')
             dispatch('logout')
         } else {
             commit('setSession', session)

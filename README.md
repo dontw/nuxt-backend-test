@@ -2,9 +2,13 @@
 
 > 凤妃堂后台管理
 
-## Build Setup
+## 环境
 
-``` bash
+本专案运作环境为 [node.js v8.9.3 版](https://nodejs.org/download/release/v8.9.3/)
+
+## 安装
+
+```bash
 # install dependencies
 $ yarn install
 
