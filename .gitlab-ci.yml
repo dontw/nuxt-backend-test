@@ -36,5 +36,5 @@ deploy-dev:
     - develop
   script:
     - sudo apt-get install sshpass
-    - sudo sshpass -p $DEV_PASS ssh -o StrictHostKeyChecking=no $DEV_USER@192.168.2.215 bash ./fofadon/fofadon-backend.sh
+    - sudo sshpass -p $DEV_PASS ssh -o StrictHostKeyChecking=no $DEV_USER@192.168.2.215 bash /home/leedian/fofadon-deploy/fofadon-backend/fofadon-backend.sh
   when: manual
