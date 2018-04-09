@@ -45,7 +45,7 @@ export default {
     mounted() {
         this.$store.dispatch('auth/logout')
         console.log(
-            '%c FOFADON BACK-END ver ' + packageJson.version + ' ',
+            '%c FOFADON BACKEND ver ' + packageJson.version + ' ',
             'background: #2d8cf0; color:#FFFFFF;'
         )
     },

@@ -7,6 +7,8 @@ export default {
          */
         errCodeMsg(errCode) {
             switch (errCode) {
+                case '01.003':
+                    return `凭证过期`
                 case '01.006':
                     return `密码错误`
                 case '02.001':

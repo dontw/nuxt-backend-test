@@ -10,7 +10,7 @@
                 <!-- QRCODE -->
                 <i-col span="6">
                     <div :style="{position:'relative'}">
-                        <qriously class="qrcode" :class="{'qrbigger':qrcodeBiggerStatus}" :value="userData.qrcode" :size="100" @click.native="toggleQrcodeBigger" />
+                        <qriously class="qrcode" :class="{'qrbigger':qrcodeBiggerStatus}" :value="userData.qrcode || 'no qr code!'" :size="100" @click.native="toggleQrcodeBigger" />
                         <a class="qrcode-link" @click="downloadQrcode">
                             <Icon type="arrow-down-a"></Icon>下载QRCODE
                         </a>
@@ -171,12 +171,11 @@ export default {
             let link = document.querySelector('.qrcode-link')
             link.setAttribute('href', base64File)
             link.setAttribute('download', fileName)
-            link.click()
         },
 
         downloadQrcode() {
             let canvas = document.getElementsByTagName('canvas')[0]
-            let dataUrl = canvas.toDataURL()
+            let dataUrl = canvas.toDataURL() //转为base64
             this.saveAsImg(dataUrl, 'qrcode')
         },
 

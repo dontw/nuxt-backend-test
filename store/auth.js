@@ -29,6 +29,7 @@ export const mutations = {
 }
 
 export const actions = {
+    //send user name & pwd, get session & rsession
     authUser({ commit }, { user, pwd }) {
         return this.$axios
             .$post(
@@ -62,7 +63,7 @@ export const actions = {
             })
     },
 
-    initAuth({ commit, dispatch }, req) {
+    initAuth({ commit, dispatch }) {
         let session = Cookie.get('session')
         let rsession = Cookie.get('rsession')
 
@@ -77,13 +78,15 @@ export const actions = {
     },
 
     logout({ commit }) {
+        // get session and rsession from cookie
         let session = Cookie.get('session')
         let rsession = Cookie.get('rsession')
 
+        //if there's session and ression, init logout api
         if (session && rsession) {
             this.$axios
                 .$post(
-                    API_URL + '/admin/login',
+                    API_URL + '/admin/logout',
                     { rsession },
                     { headers: { 'k-session': session } }
                 )
@@ -95,6 +98,7 @@ export const actions = {
                 })
         }
 
+        // claer state and cookie
         commit('clearSession')
         commit('clearRsession')
         Cookie.remove('session')

@@ -5,20 +5,18 @@ const TODAY = new Date()
 const FORMAT_TODAY = `${TODAY.getFullYear()}/${TODAY.getMonth() +
     1}/${TODAY.getDate()}`
 
-const START_DAY = new Date()
+TODAY.setDate(TODAY.getDate() - 30)
 
-START_DAY.setDate(START_DAY.getDate() - 45)
-
-const FOMRAT_START_DAY = `${START_DAY.getFullYear()}/${START_DAY.getMonth() +
-    1}/${START_DAY.getDate()}`
+const FOMRAT_START_DAY = `${TODAY.getFullYear()}/${TODAY.getMonth() +
+    1}/${TODAY.getDate()}`
 
 export const state = () => ({
     list: [],
     listCount: null,
     listSetting: {
         phone: null,
-        role: 1,
-        gender: 0,
+        role: null,
+        gender: null,
         startdate: FOMRAT_START_DAY,
         enddate: FORMAT_TODAY
     },
@@ -51,6 +49,7 @@ export const mutations = {
 }
 
 export const actions = {
+    // 取得资料阵列
     setList(VuexContext, { data, session }) {
         return this.$axios
             .$post(USER_URL + '/admin/users', data, {
@@ -70,10 +69,12 @@ export const actions = {
             })
     },
 
+    // 设定使用者资讯弹窗(user modal)显示状态
     setModalStatus(vuexContex, val) {
         vuexContex.commit('setModalStatus', val)
     },
 
+    // 取得使用者详细资讯
     setModalData(vuexContex, { userId, session }) {
         return this.$axios
             .$get(USER_URL + `/admin/user/${userId}`, {
@@ -97,7 +98,7 @@ export const actions = {
 
 export const getters = {
     getList(state) {
-        //复制阵列
+        //深层复制阵列
         let list = JSON.parse(JSON.stringify(state.list))
         list.map(item => {
             if (item.gender !== null) {

@@ -1,11 +1,11 @@
 <template>
     <div>
-        <Card class="filter-wrap" dis-hover>
+        <Card class="filter-wrap" style=" margin-bottom: 10px;" dis-hover>
             <p style="margin-bottom:15px">条件搜寻</p>
             <form @submit.prevent="onSubmit">
                 <Row :gutter="16">
                     <i-col span="5">
-                        <i-input v-model="phone" :maxlength='11' v-on:keypress.native="isNumber" placeholder="手机号" size="large"></i-input>
+                        <i-input v-model.trim="phone" :maxlength='11' v-on:keypress.native="isNumber" placeholder="手机号" size="large"></i-input>
                     </i-col>
                     <i-col span="5">
                         <Select v-model="role" size="large" placeholder="身份">
@@ -16,7 +16,6 @@
                         <Select v-model="gender" size="large" placeholder="性别">
                             <Option value="0">女性</Option>
                             <Option value="1">男性</Option>
-                            <!-- <Option value="2">无</Option> -->
                         </Select>
                     </i-col>
                     <i-col span="5">
@@ -44,10 +43,11 @@
 </template>
 <script>
 import isNumber from '~/mixins/isNumber'
+import errCodeMsg from '~/mixins/errCodeMsg'
 import UserInfoModal from '~/components/UserInfoModal'
 export default {
     layout: 'adminPanel',
-    mixins: [isNumber],
+    mixins: [isNumber, errCodeMsg],
     components: {
         UserInfoModal
     },
@@ -59,8 +59,8 @@ export default {
                         size: this.pageSize,
                         offset: 0,
                         query: {
-                            role: parseInt(this.role),
-                            gender: parseInt(this.gender),
+                            role: this.role,
+                            gender: this.gender,
                             startdate: this.startdate,
                             enddate: this.enddate,
                             phone: this.phone
@@ -70,10 +70,12 @@ export default {
                 })
                 .then(result => {
                     this.userAllLoadingStatus = false
-                    if (!result) {
+                    if (result.code) {
                         this.$Message.warning({
-                            content: '资料连接异常',
-                            duration: 3
+                            content: `发生错误：${this.errCodeMsg(
+                                result.code
+                            )}`,
+                            duration: 2
                         })
                     }
                 })
@@ -81,7 +83,7 @@ export default {
     },
     data() {
         return {
-            //filter input data
+            // filter input data
             phone: null, // string
             role: null, // 0 1
             gender: null, // 0 1
@@ -89,7 +91,7 @@ export default {
             dateRange: [
                 this.$store.state.userAll.listSetting.startdate,
                 this.$store.state.userAll.listSetting.enddate
-            ], //array
+            ],
 
             userAllLoadingStatus: true,
             //Table titles
@@ -198,14 +200,19 @@ export default {
                                                     }
                                                 )
                                                 .then(result => {
-                                                    if (!result)
-                                                        return this.$Message.warning(
-                                                            '资料连线异常'
+                                                    if (result.code) {
+                                                        this.$Message.warning({
+                                                            content: `发生错误：${this.errCodeMsg(
+                                                                result.code
+                                                            )}`,
+                                                            duration: 2
+                                                        })
+                                                    } else {
+                                                        this.$store.dispatch(
+                                                            'userAll/setModalStatus',
+                                                            true
                                                         )
-                                                    this.$store.dispatch(
-                                                        'userAll/setModalStatus',
-                                                        true
-                                                    )
+                                                    }
                                                 })
                                         }
                                     }
@@ -220,7 +227,9 @@ export default {
     },
 
     methods: {
+        // 送出查询筛选条件
         onSubmit() {
+            this.userAllLoadingStatus = true
             let size = this.pageSize
             let offset = 0
             let query = {
@@ -239,43 +248,61 @@ export default {
                     session: this.currSession
                 })
                 .then(result => {
-                    if (!result) {
+                    this.userAllLoadingStatus = false
+                    if (result.code) {
                         this.$Message.warning({
-                            content: '出问题啦!',
-                            duration: 3
-                        })
-                    }
-                    if (result.code === '00.003') {
-                        this.$Message.warning({
-                            content: '请输入完整手机号',
-                            duration: 3
+                            content: `发生错误：${this.errCodeMsg(
+                                result.code
+                            )}`,
+                            duration: 2
                         })
                     }
                 })
         },
+
+        // 清除筛选条件
         clearInput() {
             this.phone = null
             this.role = null
             this.gender = null
-            this.dateRange = [
-                this.$store.state.userAll.default_start_day,
-                this.$store.state.userAll.today
-            ]
+            this.dateRange = [null, null]
+
+            // [
+            //     this.$store.state.userAll.default_start_day,
+            //     this.$store.state.userAll.today
+            // ]
         },
 
+        // 接收datePicker回传值
         dateHandler(date) {
             this.dateRange = date
         },
 
+        // 換頁
         changePage(pageNum) {
+            this.userAllLoadingStatus = true
             let size = this.pageSize
             let offset = (pageNum - 1) * size
             let query = this.$store.state.userAll.listSetting
+
             let data = { size, offset, query }
-            this.$store.dispatch('userAll/setList', {
-                data,
-                session: this.currSession
-            })
+
+            this.$store
+                .dispatch('userAll/setList', {
+                    data,
+                    session: this.currSession
+                })
+                .then(result => {
+                    this.userAllLoadingStatus = false
+                    if (result.code) {
+                        this.$Message.warning({
+                            content: `发生错误：${this.errCodeMsg(
+                                result.code
+                            )}`,
+                            duration: 2
+                        })
+                    }
+                })
         }
     },
 
@@ -306,10 +333,6 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.filter-wrap {
-    margin-bottom: 10px;
-}
-
 .userid {
     display: none;
 }
