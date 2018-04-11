@@ -5,24 +5,24 @@
             <form @submit.prevent="onSubmit">
                 <Row :gutter="16">
                     <i-col span="5">
-                        <i-input v-model.trim="phone" :maxlength='11' v-on:keypress.native="isNumber" placeholder="手机号" size="large"></i-input>
+                        <i-input v-model.trim="phone" :maxlength='11' v-on:keypress.native="isNumber" placeholder="手机号" size="large" clearable></i-input>
                     </i-col>
                     <i-col span="5">
-                        <Select v-model="role" size="large" placeholder="身份">
+                        <Select v-model="role" size="large" placeholder="身份" clearable>
                             <Option value="1">一般用户</Option>
                         </Select>
                     </i-col>
                     <i-col span="5">
-                        <Select v-model="gender" size="large" placeholder="性别">
+                        <Select v-model="gender" size="large" placeholder="性别" clearable>
                             <Option value="0">女性</Option>
                             <Option value="1">男性</Option>
                         </Select>
                     </i-col>
                     <i-col span="5">
-                        <DatePicker format="yyyy/MM/dd" :value="dateRange" @on-change="dateHandler" type="daterange" placement="bottom-end" placeholder="日期区间" size="large"></DatePicker>
+                        <DatePicker format="yyyy/MM/dd" :value="dateRange" @on-change="dateHandler" type="daterange" placement="bottom-end" placeholder="日期区间" size="large" :split-panels="true" :clearable="false"></DatePicker>
                     </i-col>
                     <i-col span="2">
-                        <Button size="large" icon="ios-trash-outline" long @click="clearInput">清空</Button>
+                        <Button size="large" icon="refresh" long @click="clearInput">重设</Button>
                     </i-col>
                     <i-col span="2">
                         <Button type="primary" icon="ios-search" size="large" html-type="submit" long>查询</Button>
@@ -114,13 +114,13 @@ export default {
                 {
                     title: '头像',
                     width: 80,
-                    key: 'headiconurl',
+                    key: 'headimgurl',
                     align: 'center',
                     render: (h, params) => {
                         return h('div', [
                             h('Avatar', {
                                 props: {
-                                    src: params.row.headiconurl
+                                    src: params.row.headimgurl
                                 }
                             })
                         ])
@@ -265,12 +265,10 @@ export default {
             this.phone = null
             this.role = null
             this.gender = null
-            this.dateRange = [null, null]
-
-            // [
-            //     this.$store.state.userAll.default_start_day,
-            //     this.$store.state.userAll.today
-            // ]
+            this.dateRange = [
+                this.$store.state.userAll.default_start_day,
+                this.$store.state.userAll.today
+            ]
         },
 
         // 接收datePicker回传值

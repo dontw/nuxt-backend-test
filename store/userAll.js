@@ -5,7 +5,7 @@ const TODAY = new Date()
 const FORMAT_TODAY = `${TODAY.getFullYear()}/${TODAY.getMonth() +
     1}/${TODAY.getDate()}`
 
-TODAY.setDate(TODAY.getDate() - 30)
+TODAY.setDate(TODAY.getDate() - 365 * 2)
 
 const FOMRAT_START_DAY = `${TODAY.getFullYear()}/${TODAY.getMonth() +
     1}/${TODAY.getDate()}`

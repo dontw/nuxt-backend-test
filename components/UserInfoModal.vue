@@ -5,7 +5,7 @@
             <Row :style="{padding:'15px'}" :gutter="16">
                 <!-- HEADICON -->
                 <i-col span="6">
-                    <Avatar class="headicon" :class="{'bigger':imgBiggerStatus}" :src="userData.headiconurl" @click.native="toggleImgBigger" />
+                    <Avatar class="headicon" :class="{'bigger':imgBiggerStatus}" :src="userData.headimgurl" @click.native="toggleImgBigger" />
                 </i-col>
                 <!-- QRCODE -->
                 <i-col span="6">

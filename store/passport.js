@@ -13,13 +13,14 @@ export const state = () => ({
             birthday: '1949/10/01'
         }
     ],
+
     listCount: 1,
     listSetting: {
         phone: null,
         passportName: null,
         gender: null
     },
-    modalStatus: false,
+    modalStatus: true,
     modalData: {}
 })
 
@@ -45,7 +46,12 @@ export const mutations = {
     }
 }
 
-export const actions = {}
+export const actions = {
+    // 设定使用者资讯弹窗(user modal)显示状态
+    setModalStatus(vuexContex, val) {
+        vuexContex.commit('setModalStatus', val)
+    }
+}
 
 export const getters = {
     getList(state) {
