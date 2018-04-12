@@ -30,7 +30,7 @@
         <Table border :columns="userCol" :data="currListData" :loading="loadingStatus"></Table>
         <Page style="margin-top:15px" @on-change="changePage" :total="listCount" :page-size="pageSize" show-elevator show-total></Page>
         <!-- MODAL -->
-        <PassportModal></PassportModal>
+        <PassportModal :passportData="passportData"></PassportModal>
     </div>
 </template>
 <script>
@@ -142,6 +142,9 @@ export default {
         },
         listCount() {
             return this.$store.state.passport.listCount
+        },
+        passportData() {
+            return this.$store.state.passport.modalData
         }
     },
 

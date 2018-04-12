@@ -21,7 +21,18 @@ export const state = () => ({
         gender: null
     },
     modalStatus: true,
-    modalData: {}
+    modalData: {
+        nickname: 'doge',
+        passportNumber: '000001-1',
+        phone: '12345678912',
+        name: '富贵郭',
+        passportName: '王美美',
+        passportRel: '母亲',
+        gender: 0,
+        height: 360,
+        weight: 530,
+        birthday: '1949/10/01'
+    }
 })
 
 export const mutations = {
