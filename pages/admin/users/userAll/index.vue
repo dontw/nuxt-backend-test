@@ -1,85 +1,100 @@
 <template>
     <div>
-        <Card class="filter-wrap" dis-hover>
+        <Card class="filter-wrap" style=" margin-bottom: 10px;" dis-hover>
             <p style="margin-bottom:15px">条件搜寻</p>
             <form @submit.prevent="onSubmit">
                 <Row :gutter="16">
                     <i-col span="5">
-                        <i-input v-model="phone" :maxlength='11' v-on:keypress.native="isNumber" placeholder="手机号" size="large"></i-input>
+                        <i-input v-model.trim="phone" :maxlength='11' v-on:keypress.native="isNumber" placeholder="手机号" size="large" clearable></i-input>
                     </i-col>
                     <i-col span="5">
-                        <Select v-model="role" size="large" placeholder="身份">
-                            <Option value="0">一般用户</Option>
+                        <Select v-model="role" size="large" placeholder="身份" clearable>
+                            <Option value="1">一般用户</Option>
                         </Select>
                     </i-col>
                     <i-col span="5">
-                        <Select v-model="gender" size="large" placeholder="性别">
-                            <Option value="0">男性</Option>
-                            <Option value="1">女性</Option>
-                            <Option value="2">无</Option>
+                        <Select v-model="gender" size="large" placeholder="性别" clearable>
+                            <Option value="0">女性</Option>
+                            <Option value="1">男性</Option>
                         </Select>
                     </i-col>
                     <i-col span="5">
-                        <DatePicker v-model="dateRange" type="daterange" placement="bottom-end" placeholder="日期区间" size="large"></DatePicker>
+                        <DatePicker format="yyyy/MM/dd" :value="dateRange" @on-change="dateHandler" type="daterange" placement="bottom-end" placeholder="日期区间" size="large" :split-panels="true" :clearable="false"></DatePicker>
                     </i-col>
                     <i-col span="2">
-                        <Button size="large" icon="ios-trash-outline" long @click="clearInput">清空</Button>
+                        <Button size="large" icon="refresh" long @click="clearInput">重设</Button>
                     </i-col>
                     <i-col span="2">
-                        <Button type="primary" icon="ios-search" size="large" long>查询</Button>
+                        <Button type="primary" icon="ios-search" size="large" html-type="submit" long>查询</Button>
                     </i-col>
                 </Row>
             </form>
-
+            <!-- FOR INPUT TESTING -->
+            <!-- <p>{{[phone, role, gender, dateRange]}}</p> -->
         </Card>
-        <Table border :columns="userCol" :data="currData"></Table>
-        <!-- <p>{{[mobile, userType, userSex, dateRange]}}</p> -->
-        <Page style="margin-top:15px" :total="currData.length" :page-size="2" show-elevator show-total></Page>
+
+        <!-- TABLE -->
+        <Table border :columns="userCol" :data="currListData" :loading="userAllLoadingStatus"></Table>
+        <Page style="margin-top:15px" @on-change="changePage" :total="listCount" :page-size="pageSize" show-elevator show-total></Page>
 
         <!-- MODAL -->
-        <Modal v-model="modal2" width="960">
-            <div slot="header">
-                <h2>帳號詳情</h2>
-            </div>
-            <div>
-                <Row>
-                    <i-col span="12">
-                        <div>
-                            <i-col span="12">
-                                <Avatar icon="person" size="large" />
-                            </i-col>
-                            <i-col span="12">
-                                <Avatar shape="square" icon="person" size="large" />
-                            </i-col>
-                        </div>
-                        <div>
-                            ok
-                        </div>
-                    </i-col>
-                    <i-col span="12">
-                        hello
-                    </i-col>
-                </Row>
-            </div>
-            <div slot="footer">
-                <Button type="primary" size="large" @click="clickTurnOffModal">確定</Button>
-            </div>
-        </Modal>
+        <UserInfoModal :userData="currUserData"></UserInfoModal>
     </div>
 </template>
 <script>
 import isNumber from '~/mixins/isNumber'
+import errCodeMsg from '~/mixins/errCodeMsg'
+import UserInfoModal from '~/components/UserInfoModal'
 export default {
     layout: 'adminPanel',
-    mixins: [isNumber],
+    mixins: [isNumber, errCodeMsg],
+    components: {
+        UserInfoModal
+    },
+    mounted() {
+        this.$nextTick(() => {
+            this.$store
+                .dispatch('userAll/setList', {
+                    data: {
+                        size: this.pageSize,
+                        offset: 0,
+                        query: {
+                            role: this.role,
+                            gender: this.gender,
+                            startdate: this.startdate,
+                            enddate: this.enddate,
+                            phone: this.phone
+                        }
+                    },
+                    session: this.currSession
+                })
+                .then(result => {
+                    this.userAllLoadingStatus = false
+                    if (result.code) {
+                        this.$Message.warning({
+                            content: `发生错误：${this.errCodeMsg(
+                                result.code
+                            )}`,
+                            duration: 2
+                        })
+                    }
+                })
+        })
+    },
     data() {
         return {
+            // filter input data
             phone: null, // string
             role: null, // 0 1
             gender: null, // 0 1
-            dateRange: null, //array
+            pageSize: 10,
+            dateRange: [
+                this.$store.state.userAll.listSetting.startdate,
+                this.$store.state.userAll.listSetting.enddate
+            ],
 
-            modal2: true,
+            userAllLoadingStatus: true,
+            //Table titles
             userCol: [
                 {
                     type: 'index',
@@ -88,24 +103,24 @@ export default {
                 },
                 {
                     title: '用户ID',
-                    key: 'userid',
+                    key: 'nickname',
                     align: 'center'
                 },
                 {
                     title: '手机号',
-                    key: 'phone',
+                    key: 'nickname',
                     align: 'center'
                 },
                 {
                     title: '头像',
                     width: 80,
-                    key: 'headicon',
+                    key: 'headimgurl',
                     align: 'center',
                     render: (h, params) => {
                         return h('div', [
                             h('Avatar', {
                                 props: {
-                                    src: params.row.headicon
+                                    src: params.row.headimgurl
                                 }
                             })
                         ])
@@ -119,7 +134,7 @@ export default {
                 {
                     title: '身份',
                     key: 'role',
-                    width: 70,
+                    width: 100,
                     align: 'center'
                 },
                 {
@@ -134,24 +149,13 @@ export default {
                     align: 'center'
                 },
                 {
-                    title: '身高/cm',
-                    key: 'height',
-                    width: 90,
-                    align: 'center'
-                },
-                {
-                    title: '体重/斤',
-                    key: 'weight',
-                    width: 90,
-                    align: 'center'
-                },
-                {
-                    title: '出生日期',
-                    key: 'birthday',
+                    title: '注册时间',
+                    key: 'createdate',
                     align: 'center'
                 },
                 {
                     title: '健康护照',
+                    width: 120,
                     align: 'center',
                     render: (h, params) => {
                         return h('div', [
@@ -170,13 +174,9 @@ export default {
                     }
                 },
                 {
-                    title: '注册时间',
-                    key: 'creatdate',
-                    align: 'center'
-                },
-                {
                     title: '详情',
                     align: 'center',
+                    width: 70,
                     render: (h, params) => {
                         return h('div', [
                             h(
@@ -188,8 +188,32 @@ export default {
                                     },
 
                                     on: {
-                                        click: () => {
-                                            alert(params.row.userid)
+                                        click: e => {
+                                            this.$store
+                                                .dispatch(
+                                                    'userAll/setModalData',
+                                                    {
+                                                        userId:
+                                                            params.row.userid,
+                                                        session: this.$store
+                                                            .state.auth.session
+                                                    }
+                                                )
+                                                .then(result => {
+                                                    if (result.code) {
+                                                        this.$Message.warning({
+                                                            content: `发生错误：${this.errCodeMsg(
+                                                                result.code
+                                                            )}`,
+                                                            duration: 2
+                                                        })
+                                                    } else {
+                                                        this.$store.dispatch(
+                                                            'userAll/setModalStatus',
+                                                            true
+                                                        )
+                                                    }
+                                                })
                                         }
                                     }
                                 },
@@ -198,169 +222,117 @@ export default {
                         ])
                     }
                 }
-            ],
-
-            currData: [
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon: 'https://i.loli.net/2017/08/21/599a521472424.jpg',
-                    nickname: 'doge',
-                    role: 0,
-                    name: '小兵兵',
-                    gender: 0, //0:female 1:male
-                    height: 170,
-                    weight: 50,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                },
-                {
-                    userid: '11111111111111111',
-                    phone: '22222222222',
-                    headicon:
-                        'https://yt3.ggpht.com/a-/AJLlDp0IRp_oQ5kngGHTRAgD3ERPJNoadK3xz26vZQ=s900-mo-c-c0xffffffff-rj-k-no',
-                    nickname: 'shiba',
-                    role: 0,
-                    name: 'doge',
-                    gender: 0, //0:female 1:male
-                    height: 200,
-                    weight: 250,
-                    birthday: '1980/08/01',
-                    creatdate: '2000/01/01/12:00:00'
-                }
             ]
         }
     },
 
     methods: {
-        onSubmit() {},
-        clearInput() {
-            this.mobile = null
-            this.userType = null
-            this.userSex = null
-            this.dateRange = null
+        // 送出查询筛选条件
+        onSubmit() {
+            this.userAllLoadingStatus = true
+            let size = this.pageSize
+            let offset = 0
+            let query = {
+                role: this.role,
+                gender: this.gender,
+                startdate: this.startdate,
+                enddate: this.enddate,
+                phone: this.phone || null
+            }
+
+            let data = { size, offset, query }
+
+            this.$store
+                .dispatch('userAll/setList', {
+                    data,
+                    session: this.currSession
+                })
+                .then(result => {
+                    this.userAllLoadingStatus = false
+                    if (result.code) {
+                        this.$Message.warning({
+                            content: `发生错误：${this.errCodeMsg(
+                                result.code
+                            )}`,
+                            duration: 2
+                        })
+                    }
+                })
         },
-        clickTurnOffModal() {
-            this.modal2 = false
+
+        // 清除筛选条件
+        clearInput() {
+            this.phone = null
+            this.role = null
+            this.gender = null
+            this.dateRange = [
+                this.$store.state.userAll.default_start_day,
+                this.$store.state.userAll.today
+            ]
+        },
+
+        // 接收datePicker回传值
+        dateHandler(date) {
+            this.dateRange = date
+        },
+
+        // 換頁
+        changePage(pageNum) {
+            this.userAllLoadingStatus = true
+            let size = this.pageSize
+            let offset = (pageNum - 1) * size
+            let query = this.$store.state.userAll.listSetting
+
+            let data = { size, offset, query }
+
+            this.$store
+                .dispatch('userAll/setList', {
+                    data,
+                    session: this.currSession
+                })
+                .then(result => {
+                    this.userAllLoadingStatus = false
+                    if (result.code) {
+                        this.$Message.warning({
+                            content: `发生错误：${this.errCodeMsg(
+                                result.code
+                            )}`,
+                            duration: 2
+                        })
+                    }
+                })
+        }
+    },
+
+    computed: {
+        currSession() {
+            return this.$store.state.auth.session
+        },
+        currUserData() {
+            return this.$store.state.userAll.modalData
+        },
+
+        currListData() {
+            return this.$store.getters['userAll/getList']
+        },
+
+        startdate() {
+            return this.dateRange[0]
+        },
+
+        enddate() {
+            return this.dateRange[1]
+        },
+
+        listCount() {
+            return this.$store.state.userAll.listCount
         }
     }
 }
 </script>
 <style lang="less" scoped>
-.filter-wrap {
-    margin-bottom: 10px;
+.userid {
+    display: none;
 }
 </style>
 

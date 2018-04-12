@@ -8,7 +8,8 @@ module.exports = {
      */
     head: {
         title: pkg.name,
-        meta: [{
+        meta: [
+            {
                 charset: 'utf-8'
             },
             {
@@ -29,11 +30,13 @@ module.exports = {
                 content: pkg.description
             }
         ],
-        link: [{
-            rel: 'icon',
-            type: 'image/x-icon',
-            href: '/favicon.ico'
-        }]
+        link: [
+            {
+                rel: 'icon',
+                type: 'image/x-icon',
+                href: '/favicon.ico'
+            }
+        ]
     },
 
     /*
@@ -46,28 +49,37 @@ module.exports = {
     /*
      ** Global CSS
      */
-    css: [{
-        src: '../assets/less/global.less',
-        lang: 'less'
-    }],
+    css: [
+        {
+            src: '../assets/less/global.less',
+            lang: 'less'
+        }
+    ],
 
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: [{
-        src: '~plugins/iview.js',
-        ssr: true
-    }],
+    plugins: [
+        {
+            src: '~plugins/iview.js',
+            ssr: true
+        },
+        {
+            src: '~plugins/qriously.js'
+        }
+    ],
 
     /*
      ** Nuxt.js modules
      */
     modules: [
         // Doc: https://github.com/nuxt-community/axios-module#usage
-        '@nuxtjs/axios', [
+        '@nuxtjs/axios',
+        [
             'nuxt-i18n',
             {
-                locales: [{
+                locales: [
+                    {
                         code: 'cn',
                         iso: 'zh-cn',
                         langFile: 'zh-cn.json',
@@ -90,7 +102,7 @@ module.exports = {
      ** Middleware configuration
      */
     router: {
-        middleware: ['routerBlocker']
+        middleware: ['routerBlocker', 'check-auth', 'auth']
     },
 
     /*
@@ -98,6 +110,15 @@ module.exports = {
      */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
+        // baseURL: process.env.BASE_URL || 'http://localhost:3000'
+    },
+
+    env: {
+        K_TOKEN: process.env.K_TOKEN || 'LeedianPlatformToken',
+        API_PWD_KEY: process.env.API_PWD_KEY || '769E18DAFE373A2F8A17B415',
+        API_URL: process.env.API_URL || 'http://192.168.2.215:21000/api/v1',
+        USER_URL: process.env.USER_URL || 'http://192.168.2.215:21300/api/v1',
+        MOCK_URL: process.env.MOCK_URL || 'http://localhost:3000'
     },
 
     /*

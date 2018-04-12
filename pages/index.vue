@@ -1,14 +1,14 @@
 <template>
     <div>
-        <Card shadow>
-            <nuxt-link :to="localePath('admin/dashBoard',null)">Control Panel</nuxt-link><br>
-            <nuxt-link :to="localePath('login')">Login</nuxt-link>
-        </Card>
     </div>
 </template>
 
 <script>
-export default {}
+export default {
+    mounted() {
+        this.$router.push('/login')
+    }
+}
 </script>
 
 <style lang="less" scoped>

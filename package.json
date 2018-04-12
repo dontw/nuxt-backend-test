@@ -1,5 +1,5 @@
 {
-    "name": "backend-testing",
+    "name": "fofadon-backend",
     "version": "1.0.0",
     "description": "My spectacular Nuxt.js project",
     "author": "Don",
@@ -13,13 +13,16 @@
         "precommit": "npm run lint"
     },
     "dependencies": {
-        "@nuxtjs/axios": "^5.0.0",
+        "@nuxtjs/axios": "^5.1.1",
         "babel-plugin-import": "^1.6.5",
         "express": "^4.15.3",
         "iview": "^2.9.2",
+        "js-cookie": "^2.2.0",
+        "md5": "^2.2.1",
         "nuxt": "^1.0.0",
         "nuxt-i18n": "^2.3.4",
-        "vee-validate": "^2.0.5"
+        "vee-validate": "^2.0.5",
+        "vue-qriously": "^1.1.1"
     },
     "devDependencies": {
         "babel-eslint": "^8.2.1",

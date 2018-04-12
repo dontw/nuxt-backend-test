@@ -1,0 +1,40 @@
+# ==== COMMON ====
+stages:
+  - build
+  - clear
+  - push
+  - deploy
+
+build:
+  stage: build
+  script:
+    - tar -czvf tmp.tgz *
+    - docker build -t fofadon-backend .
+
+# ==== DEVELOP ====
+clear-dev:
+  stage: clear
+  script:
+    - sudo docker rmi harbor.leediancn.com/fofadon/fofadon-backend
+  only:
+    - develop
+  allow_failure: true
+
+push-dev:
+  stage: push
+  only:
+    - develop
+  script:
+    - sudo docker tag fofadon-backend harbor.leediancn.com/fofadon/fofadon-backend
+    - sudo docker push harbor.leediancn.com/fofadon/fofadon-backend
+  after_script:
+    - sudo docker rmi fofadon-backend
+
+deploy-dev:
+  stage: deploy
+  only:
+    - develop
+  script:
+    - sudo apt-get install sshpass
+    - sudo sshpass -p $DEV_PASS ssh -o StrictHostKeyChecking=no $DEV_USER@192.168.2.215 bash /home/leedian/fofadon-deploy/fofadon-backend/fofadon-backend.sh
+  when: manual

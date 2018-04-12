@@ -2,16 +2,16 @@
     <div class="login_backgournd">
         <h1 class="title">凤妃堂管理系统</h1>
         <Card class="card" shadow>
-            <h3 class="card__title">管理登陆</h3>
+            <h3 class="card__title">管理登录</h3>
             <form @submit.prevent="onSubmit">
                 <p>账号</p>
-                <i-input @keyup.native="loginTyping(user,pwd)" v-model="user" class="input" type="text" placeholder="请输入账号" size="large" :maxlength="20">
+                <i-input @keyup.native="loginTyping(user,pwd)" v-model.trim="user" class="input" type="text" placeholder="请输入账号" size="large" :maxlength="20">
                     <span slot="prepend">
                         <Icon class="icon" type="person" color="#CCCCCC" size="20"></Icon>
                     </span>
                 </i-input>
                 <p>密码</p>
-                <i-input @keyup.native="loginTyping(user,pwd)" v-model="pwd" class="input" :class="{'has-error':false}" type="password" placeholder="请输入密码" size="large" :maxlength="10">
+                <i-input @keyup.native="loginTyping(user,pwd)" v-model.trim="pwd" class="input" :class="{'has-error':false}" type="password" placeholder="请输入密码" size="large" :maxlength="10">
                     <span slot="prepend">
                         <Icon class="icon" type="key" color="#CCCCCC" size="20"></Icon>
                     </span>
@@ -19,7 +19,7 @@
                 <div class="card__bottom-wrap">
                     <div class="message-wrap">
                         <p class="message message--success" v-if="successMsgStatus">
-                            <Icon type="checkmark-circled" size="16"></Icon> 恭喜登录成功!
+                            <Icon type="checkmark-circled" size="16"></Icon> {{successMsg}}
                         </p>
                         <p class="message message--error" v-if="failMsgStatus">
                             <Icon type="android-warning" size="18"></Icon> {{failMsg}}
@@ -33,16 +33,28 @@
 </template>
 <script>
 import { Input } from 'iview'
+import md5 from 'md5'
+import errCodeMsg from '~/mixins/errCodeMsg'
+import packageJson from '~/package.json'
 
 export default {
     components: {
         'i-input': Input
+    },
+    mixins: [errCodeMsg],
+    mounted() {
+        this.$store.dispatch('auth/logout')
+        console.log(
+            '%c FOFADON BACKEND ver ' + packageJson.version + ' ',
+            'background: #2d8cf0; color:#FFFFFF;'
+        )
     },
     data() {
         return {
             loginStatus: false,
             disableStatus: true,
             successMsgStatus: false,
+            successMsg: '',
             failMsgStatus: false,
             failMsg: '',
             user: '',
@@ -51,38 +63,31 @@ export default {
     },
     methods: {
         onSubmit() {
-            this.failMsgStatus = false
+            //turn off error msg
+            this.toggleErrMsg(null, false)
             this.loginStatus = true
-            if (this.userPwdValidate(this.pwd)) {
-                login()
-                    .then(data => {
-                        this.loginStatus = false
-                        this.successMsgStatus = true
-                        setTimeout(() => {
-                            this.successMsgStatus = false
-                            this.$router.push('admin')
-                        }, 1500)
-                    })
-                    .catch(e => {
-                        this.loginStatus = false
-                        this.failMsgStatus = true
-                        this.failMsg = '登录失败，请重新登录!'
-                        console.log(e)
-                    })
-            }
-
-            function login(user, pwd) {
-                return new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                        let status = true
-                        if (status) {
-                            resolve('ok!')
-                        } else {
-                            reject('err')
-                        }
-                    }, 1500)
+            // auth user
+            this.$store
+                .dispatch('auth/authUser', {
+                    user: this.user,
+                    pwd: md5(this.pwd)
                 })
-            }
+                .then(result => {
+                    // if ok, pop success msg then go to admin page
+                    if (result.code === 'ok') {
+                        this.toggleSuccessMsg('恭喜登录成功！', true)
+                        setTimeout(() => {
+                            this.$router.push('/admin')
+                        }, 2000)
+                        return
+                    }
+
+                    // if there's error code, pop error msg
+                    if (result.code) {
+                        this.toggleErrMsg(this.errCodeMsg(result.code), true)
+                        return
+                    }
+                })
         },
 
         //侦测是否所有输入格均被输入内容，若都有输入内容，改变登录鈕状态
@@ -92,19 +97,25 @@ export default {
                 : (this.disableStatus = true)
         },
 
-        //账户格式验证
-        userNameValidate(user) {},
-
         //密码格式验证
         userPwdValidate(pwd) {
             let re = /^[a-zA-Z0-9]{6,10}$/
             if (!re.test(pwd)) {
-                this.failMsgStatus = true
-                this.failMsg = '密码输入错误!'
-                this.loginStatus = false
+                this.toggleErrMsg('密码输入错误', true)
                 return false
             }
             return true
+        },
+
+        toggleErrMsg(errMsg, val) {
+            this.failMsg = errMsg
+            this.failMsgStatus = val
+            this.loginStatus = false
+        },
+
+        toggleSuccessMsg(msg, val) {
+            this.successMsg = msg
+            this.successMsgStatus = val
         }
     }
 }

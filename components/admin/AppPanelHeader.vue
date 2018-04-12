@@ -1,13 +1,13 @@
 <template>
-    <Menu class="menu" mode="horizontal" theme="light" width="auto">
-        <h3>{{$t(routerName)}}</h3>
+    <Menu class="menu" mode="horizontal" theme="light" width="auto" :active-name="routerName">
+        <h3>{{$t(routerNameWithPage)}}</h3>
         <Submenu class="submenu" name="setting">
             <template slot="title">
                 <Icon size="18" type="settings"></Icon>系统设置
             </template>
             <!-- <i-menuItem name="adminLists" disabled>管理员列表</i-menuItem> -->
-            <i-menuItem name="changePassword">修改密码</i-menuItem>
-            <i-menuItem name="logout" @click.native="$router.push('/login')">登出</i-menuItem>
+            <i-menuItem name="changePassword" 　@click.native="toChangePwd">修改管理员密码</i-menuItem>
+            <i-menuItem name="logout" @click.native="onLogout">登出</i-menuItem>
         </Submenu>
     </Menu>
 </template>
@@ -19,13 +19,30 @@ export default {
     },
 
     computed: {
-        routerName() {
+        routerNameWithPage() {
             return (
                 'page.' +
                 this.$route.path.split('/')[
                     this.$route.path.split('/').length - 1
                 ]
             )
+        },
+
+        routerName() {
+            return this.$route.path.split('/')[
+                this.$route.path.split('/').length - 1
+            ]
+        }
+    },
+
+    methods: {
+        onLogout() {
+            this.$store.dispatch('auth/logout')
+            this.$router.push('/login')
+        },
+
+        toChangePwd() {
+            this.$router.push('/admin/changePassword')
         }
     }
 }
